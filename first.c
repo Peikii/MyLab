@@ -11,7 +11,7 @@ void genprimes(int N) {
         printf("Memory allocation error");
         return;
     }
-    
+
     int limit = floor((N+1)/2);
 
     #pragma omp parallel for schedule(dynamic)
@@ -36,7 +36,7 @@ void genprimes(int N) {
     }
     fprintf(outfile, "1 2\n"); // 2 is always the first prime
     int numprimes = 2; // Starting with the second prime
-    for (i = 3; i <= N; i += 2) { // Also, we escape all even numbers because they never prime
+    for (int i = 3; i <= N; i += 2) { // Also, we escape all even numbers because they never prime
         if (primes[i] == false) {
             fprintf(outfile, "%d %d\n", numprimes++, i); // write the primes to the output file
         }
