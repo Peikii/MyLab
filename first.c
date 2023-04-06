@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     }
     double tstart, ttaken;
     tstart = omp_get_wtime(); // measure the start time
-    genprimes(N);
+    genprimes(N, t);
     ttaken = omp_get_wtime() - tstart; // measure the total time
     printf("Time taken for the main part: %f\n", ttaken);
     return 0;
