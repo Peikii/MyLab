@@ -5,7 +5,7 @@
 #include <omp.h>
 
 // Function to generate prime numbers up to N
-void genprimes(int N) {
+void genprimes(int N, int t) {
     bool *primes = (bool *) calloc(N+1, sizeof(bool)); // allocate an array of size N+1 and initialize it with false
     if (primes == NULL) {
         printf("Memory allocation error");
@@ -14,7 +14,7 @@ void genprimes(int N) {
 
     int limit = floor((N+1)/2);
 
-    #pragma omp parallel for schedule(dynamic)
+    #pragma omp parallel for num_threads(t) schedule(dynamic)
     for (int i = 2; i <= limit; i ++) {
         if (primes[i] == false) { // false means prime!!!
             for (int j = i*i; j <= N; j += i) {
@@ -46,12 +46,13 @@ void genprimes(int N) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        printf("Usage: ./genprime N\n");
+    if (argc != 3) {
+        printf("Usage: ./genprime N t\n");
         return 0;
     }
     int N = atoi(argv[1]);
-    if (N < 2) {
+    int t = atoi(argv[2]);
+    if (N < 2 || t <= 0 || t > 100) {
         printf("Invalid input\n");
         return 0;
     }
