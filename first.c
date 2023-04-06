@@ -11,7 +11,7 @@ void genprimes(int N) {
         printf("Memory allocation error");
         return;
     }
-    int i, j = 0;
+    int i, j;
 
     #pragma omp parallel for private(i,j) schedule(dynamic)
     for (i = 2; i <= floor((N+1)/2); i += 1) {
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
         printf("Invalid input\n");
         return 0;
     }
-    double tstart = 0.0, tend=0.0, ttaken;
+    double tstart, ttaken;
     tstart = omp_get_wtime(); // measure the start time
     genprimes(N);
     ttaken = omp_get_wtime() - tstart; // measure the total time
