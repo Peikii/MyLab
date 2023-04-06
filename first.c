@@ -34,7 +34,7 @@ void genprimes(int N, int t) {
         printf("Error creating file %s", filename);
         return;
     }
-    fprintf(outfile, "1 2\n"); // 2 is always the first prime
+    fprintf(outfile, "1, 2\n"); // 2 is always the first prime
     int numprimes = 2; // Starting with the second prime
     for (int i = 3; i <= N; i += 2) { // Also, we escape all even numbers because they never prime
         if (primes[i] == false) {
