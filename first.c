@@ -5,33 +5,26 @@
 #include <omp.h>
 
 // Function to generate prime numbers up to N
-void genprimes(int N, int t) {
-    int *primes = (int *) calloc(N, sizeof(int)); // allocate an array of size N and initialize it with 0
+void genprimes(int N) {
+    bool *primes = (bool *) calloc(N+1, sizeof(bool)); // allocate an array of size N+1 and initialize it with false
     if (primes == NULL) {
         printf("Memory allocation error");
         return;
     }
-    int i, j, numprimes = 0;
-    primes[numprimes++] = 2; // 2 is the first prime
+    int i, j = 0;
 
-    #pragma omp parallel for num_threads(t) private(j) schedule(dynamic)
-    for (i = 3; i <= N; i += 2) {
-        bool isprime = true;
-        int limit = sqrt(i);
-        for (j = 0; j < numprimes; j++) {
-            if (primes[j] > limit) break; // optimization: stop checking when the next prime is greater than the square root of the number being tested
-            if (i % primes[j] == 0) {
-                isprime = false;
-                break;
-            }
-        }
-        if (isprime) {
-            #pragma omp critical
-            {
-                primes[numprimes++] = i;
+    #pragma omp parallel for private(i,j) schedule(dynamic)
+    for (i = 2; i <= floor((N+1)/2); i += 1) {
+        if (primes[i] == false) { // false means prime!!!
+            for (j = i*i; j <= N; j += i) {
+                #pragma omp critical
+                {
+                    primes[j] = true; // cross out the multiple of current prime number "i"
+                }
             }
         }
     }
+
     FILE *outfile;
     char filename[15];
     sprintf(filename, "%d.txt", N); // generate the output filename
@@ -41,28 +34,30 @@ void genprimes(int N, int t) {
         return;
     }
     fprintf(outfile, "1 2\n"); // 2 is always the first prime
-    for (i = 1; i < numprimes; i++) {
-        fprintf(outfile, "%d %d\n", i+1, primes[i]); // write the primes to the output file
+    int numprimes = 2; // Starting with the second prime
+    for (i = 3; i <= N; i += 2) { // Also, we escape all even numbers because they never prime
+        if (primes[i] == false) {
+            fprintf(outfile, "%d %d\n", numprimes++, i); // write the primes to the output file
+        }
     }
     fclose(outfile);
     free(primes);
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        printf("Usage: ./genprime N t\n");
+    if (argc != 2) {
+        printf("Usage: ./genprime N\n");
         return 0;
     }
     int N = atoi(argv[1]);
-    int t = atoi(argv[2]);
-    if (N < 2 || t <= 0 || t > 100) {
+    if (N < 2) {
         printf("Invalid input\n");
         return 0;
     }
     double tstart = 0.0, tend=0.0, ttaken;
     tstart = omp_get_wtime(); // measure the start time
-    genprimes(N, t);
+    genprimes(N);
     ttaken = omp_get_wtime() - tstart; // measure the total time
-    printf(“Time take for the main part: %f\n”, ttaken);
+    printf("Time taken for the main part: %f\n", ttaken);
     return 0;
 }
