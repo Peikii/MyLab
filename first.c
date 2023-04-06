@@ -11,12 +11,13 @@ void genprimes(int N) {
         printf("Memory allocation error");
         return;
     }
-    int i, j;
+    
+    int limit = floor((N+1)/2);
 
-    #pragma omp parallel for private(i,j) schedule(dynamic)
-    for (i = 2; i <= floor((N+1)/2); i += 1) {
+    #pragma omp parallel for schedule(dynamic)
+    for (int i = 2; i <= limit; i ++) {
         if (primes[i] == false) { // false means prime!!!
-            for (j = i*i; j <= N; j += i) {
+            for (int j = i*i; j <= N; j += i) {
                 #pragma omp critical
                 {
                     primes[j] = true; // cross out the multiple of current prime number "i"
