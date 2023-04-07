@@ -18,15 +18,19 @@ void genprimes(int N, int t) {
     tstart = omp_get_wtime(); // measure the start time
 
     #pragma omp parallel num_threads(t)
-    for (int i = 2; i <= limit; i ++) {
-        if (primes[i] == false) { // false means prime!!!
-            for (int j = 2*i; j <= N; j += i) {
-                #pragma omp critical{
-                    primes[j] = true; // cross out the multiple of current prime number "i"
+    {
+        for (int i = 2; i <= limit; i ++) {
+            if (primes[i] == false) { // false means prime!!!
+                for (int j = 2*i; j <= N; j += i) {
+                    #pragma omp critical
+                    {
+                        primes[j] = true; // cross out the multiple of current prime number "i"
+                    }
                 }
             }
         }
     }
+
 
     ttaken = omp_get_wtime() - tstart; // measure the total time
     printf("Time taken for the main part: %f\n", ttaken);
