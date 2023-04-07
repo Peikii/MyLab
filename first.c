@@ -20,7 +20,7 @@ void genprimes(int N, int t) {
     #pragma omp parallel for num_threads(t) schedule(dynamic)
     for (int i = 2; i <= limit; i ++) {
         if (primes[i] == false) { // false means prime!!!
-            for (int j = i*i; j <= N; j += i) {
+            for (int j = 2*i; j <= N; j += i) {
                 #pragma omp critical
                 {
                     primes[j] = true; // cross out the multiple of current prime number "i"
