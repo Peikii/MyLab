@@ -6,7 +6,7 @@
 
 // Function to generate prime numbers up to N
 void genprimes(int N, int t) {
-    bool *primes = (bool *) calloc(N+1, sizeof(bool)); // allocate an array of size N+1 and initialize it with false
+    uint8_t *primes = (uint8_t *) calloc((N+1)/8 + 1, sizeof(uint8_t)); // allocate an array of bytes to hold the bit array
     if (primes == NULL) {
         printf("Memory allocation error");
         return;
@@ -19,16 +19,19 @@ void genprimes(int N, int t) {
 
     #pragma omp parallel for num_threads(t) schedule(dynamic)
     for (int i = 2; i <= limit; i ++) {
-        if (primes[i] == false) { // false means prime!!!
+        int byte_index = i / 8; // calculate the index of the byte containing the bit for i
+        int bit_index = i % 8; // calculate the bit index within the byte for i
+        if ((primes[byte_index] & (1 << bit_index)) == 0) { // check if the bit for i is not set
             for (int j = i*i; j <= N; j += i) {
+                int byte_index_j = j / 8; // calculate the index of the byte containing the bit for j
+                int bit_index_j = j % 8; // calculate the bit index within the byte for j
                 #pragma omp critical
                 {
-                    primes[j] = true; // cross out the multiple of current prime number "i"
+                    primes[byte_index_j] |= (1 << bit_index_j); // set the bit for j
                 }
             }
         }
     }
-
     ttaken = omp_get_wtime() - tstart; // measure the total time
     printf("Time taken for the main part: %f\n", ttaken);
 
@@ -43,7 +46,9 @@ void genprimes(int N, int t) {
     fprintf(outfile, "1, 2\n"); // 2 is always the first prime
     int numprimes = 2; // Starting with the second prime
     for (int i = 3; i <= N; i += 2) { // Also, we escape all even numbers because they never prime
-        if (primes[i] == false) {
+        int byte_index = i / 8; // calculate the index of the byte containing the bit for i
+        int bit_index = i % 8; // calculate the bit index within the byte for i
+        if ((primes[byte_index] & (1 << bit_index)) == 0) { // check if the bit for i is not set
             fprintf(outfile, "%d, %d\n", numprimes++, i); // write the primes to the output file
         }
     }
