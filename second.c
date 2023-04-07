@@ -22,10 +22,7 @@ void genprimes(int N, int t) {
         for (int i = 2; i <= limit; i ++) {
             if (primes[i] == false) { // false means prime!!!
                 for (int j = 2*i; j <= N; j += i) {
-                    #pragma omp critical
-                    {
-                        primes[j] = true; // cross out the multiple of current prime number "i"
-                    }
+                    primes[j] = true; // cross out the multiple of current prime number "i"
                 }
             }
         }
