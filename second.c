@@ -15,13 +15,12 @@ void genprimes(int N, int t) {
     int limit = floor((N+1)/2);
 
     double tstart, ttaken;
-    int i, j;
     tstart = omp_get_wtime(); // measure the start time
 
-    #pragma omp parallel for num_threads(t) schedule(dynamic)
-    for (i = 2; i <= limit; i ++) {
+    #pragma omp parallel num_threads(t) schedule(dynamic)
+    for (int i = 2; i <= limit; i ++) {
         if (primes[i] == false) { // false means prime!!!
-            for (j = 2*i; j <= N; j += i) {
+            for (int j = 2*i; j <= N; j += i) {
                 primes[j] = true; // cross out the multiple of current prime number "i"
             }
         }
