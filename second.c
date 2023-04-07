@@ -17,7 +17,7 @@ void genprimes(int N, int t) {
     double tstart, ttaken;
     tstart = omp_get_wtime(); // measure the start time
 
-    #pragma omp parallel for num_threads(t) schedule(dynamic)
+    #pragma omp parallel for num_threads(t) schedule(static, 2)
     for (int i = 2; i <= limit; i ++) {
         if (primes[i] == false) { // false means prime!!!
             for (int j = 2*i; j <= N; j += i) {
