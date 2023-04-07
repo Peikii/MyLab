@@ -62,7 +62,6 @@ int main(int argc, char *argv[]) {
         printf("Invalid input\n");
         return 0;
     }
-    double tstart, ttaken;
     genprimes(N, t);
     return 0;
 }
